@@ -25,6 +25,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
+  useSidebar,
 } from "./ui/sidebar";
 import Link from "next/link";
 import Image from "next/image";
@@ -192,7 +193,8 @@ const items: SidebarItem[] = [
   },
 ];
 export default function AppSidebar() {
-  // const [isOpen, setIsOpen] = useState(false);
+  const { open } = useSidebar();
+  console.log("open&&", open);
   return (
     <Sidebar collapsible="icon">
       {/* SIDEBAR HEADER */}
@@ -224,7 +226,7 @@ export default function AppSidebar() {
               className="group/collapsible"
             >
               <SidebarGroupLabel asChild>
-                <h3 className="">{item?.header}</h3>
+                {open && <h3 className="">{item?.header}</h3>}
               </SidebarGroupLabel>
 
               {item?.title && (
@@ -245,7 +247,7 @@ export default function AppSidebar() {
                       <div className="flex items-center gap-2 w-full">
                         {item.icon && <item.icon className={`size-4`} />}
                         <div className="flex items-center justify-between w-full">
-                          <span>{item?.title}</span>
+                          {open && <span>{item?.title}</span>}
                           {item?.group && (
                             <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
                           )}
@@ -268,7 +270,7 @@ export default function AppSidebar() {
                         <div className="flex items-center gap-2 w-full">
                           {child.icon && <child.icon className={`size-4`} />}
                           <div className="flex items-center justify-between w-full">
-                            <span>{child?.title}</span>
+                            {open && <span>{child?.title}</span>}
                           </div>
                         </div>
                       </CollapsibleTrigger>
@@ -285,7 +287,7 @@ export default function AppSidebar() {
                           <SidebarMenuButton asChild>
                             <Link href={child?.href}>
                               {child?.icon && <child.icon />}
-                              <span>{child?.title}</span>
+                              {open && <span>{child?.title}</span>}
                               {child?.badge && (
                                 <SidebarMenuBadge>
                                   {child?.badge}
