@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "The Complete Front-End Development Course!",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.",
+    "price": 89.0,
+    "rating": 4.2,
+    "image": "/image/product/photo3.webp"
+  },
+  {
+    "id": 2,
+    "name": "Web Development Ultimate Course 2024",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.",
+    "price": 89.0,
+    "rating": 4.2,
+    "image": "/image/product/photo15.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Full-Stack JavaScript Course!",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.",
+    "price": 89.0,
+    "rating": 4.2,
+    "image": "/image/product/photo16.jpg"
+  }
+]
