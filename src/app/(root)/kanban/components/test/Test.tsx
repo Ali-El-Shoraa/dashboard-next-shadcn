@@ -6,7 +6,7 @@ import "./styles.css";
 import { Column } from "./Column";
 import { Item } from "./Item";
 
-export default function App() {
+export default function Test() {
   const [items, setItems] = useState({
     A: ["A0", "A1", "A2"],
     B: ["B0", "B1"],

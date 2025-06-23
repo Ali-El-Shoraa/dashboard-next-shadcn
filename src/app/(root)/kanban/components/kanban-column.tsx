@@ -4,7 +4,7 @@ import { useDroppable } from "@dnd-kit/core"
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { TaskCard } from "./task-card"
 import type { Task } from "./kanban-board"
-
+ 
 interface KanbanColumnProps {
   id: string
   tasks: Task[]
