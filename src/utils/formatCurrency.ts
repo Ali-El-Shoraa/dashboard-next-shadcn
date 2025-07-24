@@ -7,8 +7,8 @@ export const formatCurrency = (
   const opts: Intl.NumberFormatOptions = {
     style: currency === "currency" ? "currency" : "decimal",
     currency: currency === "currency" ? "EGP" : undefined,
-    minimumFractionDigits: currency ? 2 : 0,
-    maximumFractionDigits: currency ? 2 : 0,
+    minimumFractionDigits: 0, //currency ? 2 : 0,
+    maximumFractionDigits: 0, //currency ? 2 : 0,
     useGrouping: true,
   };
 

@@ -36,7 +36,7 @@ export function ProductCard({
   };
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden p-0">
       <div className="relative">
         <Image
           src={image}
@@ -77,7 +77,7 @@ export function ProductCard({
               />
             ))}
           </div>
-          <span className="text-sm ml-1">{rating.toFixed(1)}</span>
+          <span className="text-sm ml-1">{rating?.toFixed(1)}</span>
         </div>
         <div className="flex items-center gap-2">
           {originalPrice && (

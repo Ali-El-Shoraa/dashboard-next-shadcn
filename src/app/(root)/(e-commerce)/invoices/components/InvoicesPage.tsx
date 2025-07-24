@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { InvoiceCard } from "./InvoiceCard";
+// import { InvoiceCard } from "./InvoiceCard";
 import { InvoiceFilters } from "./InvoiceFilters";
 import { InvoiceStats } from "./InvoiceStats";
 import {
@@ -10,12 +10,13 @@ import {
   Download,
   Upload,
   MoreHorizontal,
-  Grid3X3,
-  List,
+  // Grid3X3,
+  // List,
   ChevronLeft,
   ChevronRight,
   Send,
   FileText,
+  ArrowUpDown,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -25,6 +26,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { DateRange } from "react-day-picker";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 interface Invoice {
   id: string;
@@ -153,9 +165,8 @@ const sampleInvoices: Invoice[] = [
 export default function InvoicesPage() {
   const [invoices] = useState(sampleInvoices);
   const [selectedInvoices, setSelectedInvoices] = useState<string[]>([]);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(12);
+  const [itemsPerPage] = useState(10);
   const [filters, setFilters] = useState({
     search: "",
     status: [] as string[],
@@ -166,7 +177,7 @@ export default function InvoicesPage() {
     sortOrder: "desc" as "asc" | "desc",
   });
 
-  // Calculate stats
+  // Calculate stats (نفس الكود الأصلي)
   const stats = useMemo(() => {
     const totalRevenue = invoices.reduce(
       (sum, invoice) => sum + invoice.amount,
@@ -196,7 +207,7 @@ export default function InvoicesPage() {
     };
   }, [invoices]);
 
-  // Filter and sort invoices
+  // Filter and sort invoices (نفس الكود الأصلي مع تعديلات طفيفة)
   const filteredInvoices = useMemo(() => {
     const filtered = invoices.filter((invoice) => {
       const matchesSearch =
@@ -302,9 +313,35 @@ export default function InvoicesPage() {
     }
   };
 
+  const handleSort = (column: string) => {
+    if (filters.sortBy === column) {
+      setFilters({
+        ...filters,
+        sortOrder: filters.sortOrder === "asc" ? "desc" : "asc",
+      });
+    } else {
+      setFilters({
+        ...filters,
+        sortBy: column,
+        sortOrder: "desc",
+      });
+    }
+  };
+
+  const statusVariantMap: Record<
+    Invoice["status"],
+    "default" | "destructive" | "outline" | "secondary" | "success" | "warning"
+  > = {
+    paid: "default",
+    pending: "secondary",
+    overdue: "destructive",
+    draft: "outline",
+    cancelled: "outline",
+  };
+
   return (
     <div className="space-y-8 content">
-      {/* Page Header */}
+      {/* Page Header (نفس الكود الأصلي) */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
@@ -350,10 +387,10 @@ export default function InvoicesPage() {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats (نفس الكود الأصلي) */}
       <InvoiceStats {...stats} />
 
-      {/* Filters */}
+      {/* Filters (نفس الكود الأصلي) */}
       <InvoiceFilters
         filters={filters}
         onFiltersChange={setFilters}
@@ -365,14 +402,13 @@ export default function InvoicesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
+            <Checkbox
               checked={
                 selectedInvoices.length === paginatedInvoices.length &&
                 paginatedInvoices.length > 0
               }
-              onChange={handleSelectAll}
-              className="h-4 w-4 rounded border-gray-300"
+              onCheckedChange={handleSelectAll}
+              className="h-4 w-4 rounded"
             />
             <span className="text-sm text-gray-600 dark:text-gray-400">
               {selectedInvoices.length > 0
@@ -394,45 +430,158 @@ export default function InvoicesPage() {
             </div>
           )}
         </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant={viewMode === "grid" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setViewMode("grid")}
-          >
-            <Grid3X3 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewMode === "list" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setViewMode("list")}
-          >
-            <List className="h-4 w-4" />
-          </Button>
-        </div>
       </div>
 
-      {/* Invoice Grid/List */}
-      <div
-        className={`${
-          viewMode === "grid"
-            ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-            : "space-y-4"
-        }`}
-      >
-        {paginatedInvoices.map((invoice) => (
-          <InvoiceCard
-            key={invoice.id}
-            invoice={invoice}
-            isSelected={selectedInvoices.includes(invoice.id)}
-            onSelect={handleSelectInvoice}
-            viewMode={viewMode}
-          />
-        ))}
+      {/* Invoice Table */}
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[50px]">
+                <Checkbox
+                  checked={
+                    selectedInvoices.length === paginatedInvoices.length &&
+                    paginatedInvoices.length > 0
+                  }
+                  onCheckedChange={handleSelectAll}
+                  className="h-4 w-4 rounded"
+                />
+              </TableHead>
+              <TableHead>
+                <Button
+                  variant="ghost"
+                  onClick={() => handleSort("id")}
+                  className="p-0 hover:bg-transparent"
+                >
+                  Invoice ID
+                  <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+              </TableHead>
+              <TableHead>
+                <Button
+                  variant="ghost"
+                  onClick={() => handleSort("customer")}
+                  className="p-0 hover:bg-transparent"
+                >
+                  Customer
+                  <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+              </TableHead>
+              <TableHead>
+                <Button
+                  variant="ghost"
+                  onClick={() => handleSort("date")}
+                  className="p-0 hover:bg-transparent"
+                >
+                  Date
+                  <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+              </TableHead>
+              <TableHead>
+                <Button
+                  variant="ghost"
+                  onClick={() => handleSort("dueDate")}
+                  className="p-0 hover:bg-transparent"
+                >
+                  Due Date
+                  <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+              </TableHead>
+              <TableHead>
+                <Button
+                  variant="ghost"
+                  onClick={() => handleSort("amount")}
+                  className="p-0 hover:bg-transparent text-right"
+                >
+                  Amount
+                  <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+              </TableHead>
+              <TableHead>
+                <Button
+                  variant="ghost"
+                  onClick={() => handleSort("status")}
+                  className="p-0 hover:bg-transparent"
+                >
+                  Status
+                  <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+              </TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedInvoices.map((invoice) => (
+              <TableRow key={invoice.id}>
+                <TableCell>
+                  <Checkbox
+                    checked={selectedInvoices.includes(invoice.id)}
+                    onCheckedChange={() => handleSelectInvoice(invoice.id)}
+                    className="h-4 w-4 rounded"
+                  />
+                </TableCell>
+                <TableCell className="font-medium">{invoice.id}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={invoice.customer.avatar} />
+                      <AvatarFallback>
+                        {invoice.customer.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div className="font-medium">{invoice.customer.name}</div>
+                      <div className="text-sm text-gray-500">
+                        {invoice.customer.company}
+                      </div>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  {new Date(invoice.date).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  {new Date(invoice.dueDate).toLocaleDateString()}
+                </TableCell>
+                <TableCell className="text-right">
+                  {invoice.amount.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: invoice.currency,
+                  })}
+                </TableCell>
+                <TableCell>
+                  <Badge variant={statusVariantMap[invoice.status]}>
+                    {invoice.status}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>View</DropdownMenuItem>
+                      <DropdownMenuItem>Edit</DropdownMenuItem>
+                      <DropdownMenuItem>Duplicate</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="text-red-600">
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
 
-      {/* Pagination */}
+      {/* Pagination (نفس الكود الأصلي) */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <div className="text-sm text-gray-500">

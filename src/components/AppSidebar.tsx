@@ -1,17 +1,21 @@
 "use client";
 
+import type React from "react";
+
 import {
   BaggageClaim,
   Calendar,
-  ChartLine,
+  LineChartIcon as ChartLine,
   ChevronDown,
   ChevronUp,
   Home,
   Inbox,
   Projector,
+  Search,
   ShoppingBag,
   User2,
 } from "lucide-react";
+
 import {
   Sidebar,
   SidebarContent,
@@ -24,317 +28,281 @@ import {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarSeparator,
-  useSidebar,
-} from "./ui/sidebar";
+} from "@/components/ui/sidebar";
+
 import Link from "next/link";
 import Image from "next/image";
-import { DropdownMenu, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
-import { DropdownMenuContent, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "./ui/collapsible";
-import { Separator } from "./ui/separator";
+} from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
+import { ScrollArea } from "./ui/scroll-area";
 
-interface SidebarItem {
-  header?: string;
-  title?: string;
-  href?: string;
-  icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+interface MenuItem {
+  title: string;
+  href: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   badge?: string | number;
-  children?: Array<{
-    title: string;
-    href: string;
-    icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-    badge?: string | number;
-  }>;
-  group?: Array<{
-    title: string;
-    href: string;
-    icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-    badge?: string | number;
-  }>;
 }
 
-const items: SidebarItem[] = [
+interface SidebarSection {
+  label: string;
+  items: Array<
+    MenuItem & {
+      children?: MenuItem[];
+    }
+  >;
+}
+
+const sidebarData: SidebarSection[] = [
   {
-    header: "Dashboard",
-    // title: "Dashboard",
-    children: [
+    label: "Overview",
+    items: [
       {
-        title: "Main",
+        title: "Dashboard",
         href: "/",
         icon: Home,
+        children: [
+          { title: "Main", href: "/", icon: Home },
+          { title: "Analytics", href: "/analytics", icon: ChartLine },
+          { title: "HR", href: "/hr-dashboard", icon: ChartLine },
+        ],
       },
       {
-        title: "Analytics",
-        href: "/analytics",
-        icon: ChartLine,
+        title: "Calendar",
+        href: "/calendar",
+        icon: Calendar,
+      },
+      {
+        title: "Campaigns",
+        href: "/campaigns",
+        icon: Inbox,
       },
     ],
   },
 
   {
-    header: "Calendar",
-    title: "Calender",
-    href: "/calender",
-    icon: Calendar,
-  },
-
-  {
-    header: "Campaigns",
-    title: "Campaigns",
-    href: "/campaigns",
-    icon: Inbox,
-  },
-  {
-    header: "Cards",
-    children: [
-      {
-        title: "Payments",
-        href: "/payments",
-        icon: Home,
-      },
-      {
-        title: "Card Payment",
-        href: "/card-payment",
-        icon: ChartLine,
-      },
-    ],
-  },
-  {
-    header: "Finance",
-    children: [
-      {
-        title: "Card Payment",
-        href: "/card-payment",
-        icon: Home,
-      },
-      {
-        title: "transaction",
-        href: "/transaction",
-        icon: ChartLine,
-      },
-    ],
-  },
-  {
-    header: "Fintech",
-    title: "Fintech",
-    href: "/fintech",
-    icon: Inbox,
-  },
-  {
-    header: "Chat",
-    title: "Inbox",
-    href: "/inbox",
-    icon: Inbox,
-  },
-
-  {
-    header: "Job Board",
-    title: "Search",
-    href: "/job-board",
-    icon: Inbox,
-  },
-
-  {
-    header: "Tasks",
-    children: [
-      {
-        title: "Task List",
-        href: "/task-list",
-        icon: Home,
-      },
-      {
-        title: "Kanban",
-        href: "/kanban",
-        icon: ChartLine,
-      },
-      {
-        title: "Sales",
-        href: "/sales",
-        icon: ChartLine,
-      },
-    ],
-  },
-  {
-    header: "E-Commerce",
-    title: "E-Commerce",
-    icon: ShoppingBag,
-    group: [
+    label: "E-Commerce",
+    items: [
       {
         title: "Shop",
         href: "/shop",
-        icon: BaggageClaim,
+        icon: ShoppingBag,
+        children: [
+          { title: "Dashboard", href: "/dashboard", icon: BaggageClaim },
+          { title: "Products", href: "/shop", icon: BaggageClaim },
+          { title: "Cart", href: "/cart", icon: BaggageClaim },
+          { title: "Orders", href: "/orders", icon: Projector },
+          { title: "Customers", href: "/customers", icon: User2 },
+          { title: "Invoices", href: "/invoices", icon: Projector },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Finance",
+    items: [
+      {
+        title: "Payments",
+        href: "/payments",
+        icon: ChartLine,
+        children: [
+          { title: "Card Payment", href: "/card-payment", icon: ChartLine },
+          { title: "Transaction", href: "/transaction", icon: Home },
+        ],
       },
       {
-        title: "Cart",
-        href: "/cart",
-        icon: BaggageClaim,
+        title: "Fintech",
+        href: "/fintech",
+        icon: Inbox,
       },
+    ],
+  },
+  {
+    label: "Communication",
+    items: [
+      // {
+      //   title: "Inbox",
+      //   href: "/inbox",
+      //   icon: Inbox,
+      //   badge: 12,
+      // },
       {
-        title: "Invoices",
-        href: "/invoices",
-        icon: Projector,
+        title: "Job Board",
+        href: "/job-board",
+        icon: Search,
       },
+    ],
+  },
+  {
+    label: "Project Management",
+    items: [
       {
-        title: "Orders",
-        href: "/orders",
-        icon: Projector,
-      },
-      {
-        title: "Customers",
-        href: "/customers",
-        icon: User2,
+        title: "Tasks",
+        href: "/tasks",
+        icon: Home,
+        children: [
+          { title: "Task List", href: "/task-list", icon: Home },
+          { title: "Kanban", href: "/kanban", icon: ChartLine },
+          { title: "Sales", href: "/sales", icon: ChartLine },
+        ],
       },
     ],
   },
 ];
+
+function SidebarNavItem({
+  item,
+}: {
+  item: MenuItem & { children?: MenuItem[] };
+}) {
+  if (!item.children) {
+    return (
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild tooltip={item.title}>
+          <Link href={item.href}>
+            <item.icon className="size-4" />
+            <span>{item.title}</span>
+            {item.badge && <SidebarMenuBadge>{item.badge}</SidebarMenuBadge>}
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  }
+
+  return (
+    <Collapsible className="group/collapsible">
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton tooltip={item.title}>
+            <item.icon className="size-4" />
+            <span>{item.title}</span>
+            <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent
+          className={cn(
+            "overflow-hidden",
+            "data-[state=closed]:animate-collapsible-up data-[state=closed]:duration-300",
+            "data-[state=open]:animate-collapsible-down data-[state=open]:duration-300"
+          )}
+        >
+          <SidebarMenuSub>
+            {item.children.map((child) => (
+              <SidebarMenuSubItem key={child.href}>
+                <SidebarMenuSubButton asChild>
+                  <Link href={child.href}>
+                    <child.icon className="size-4" />
+                    <span>{child.title}</span>
+                    {child.badge && (
+                      <SidebarMenuBadge>{child.badge}</SidebarMenuBadge>
+                    )}
+                  </Link>
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+            ))}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
+  );
+}
+
 export default function AppSidebar() {
-  const { open } = useSidebar();
-  console.log("open&&", open);
   return (
     <Sidebar collapsible="icon">
-      {/* SIDEBAR HEADER */}
-      <SidebarHeader className="py-3">
+      {/* Sidebar Header */}
+      <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link href="/">
-                <Image
-                  src={`/ali-eui1.jpg`}
-                  alt="logo"
-                  width={30}
-                  height={30}
-                />
-                <h1 className="text-lg font-semibold">Ali El-Shoraa</h1>
+            <SidebarMenuButton size="lg" asChild>
+              <Link href="/" className="flex items-center gap-2">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <Image
+                    src="/ali-eui1.jpg"
+                    alt="Logo"
+                    width={24}
+                    height={24}
+                    className="rounded"
+                  />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">Ali El-Shoraa</span>
+                  <span className="truncate text-xs">Dashboard</span>
+                </div>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarSeparator className="ml-0" />
-      {/* SIDEBAR CONTENT */}
+      <SidebarSeparator />
+
       <SidebarContent>
-        {items?.map((item, index) => (
-          <SidebarGroup className="py-0" key={index}>
-            <Collapsible
-              defaultOpen={item?.group ? true : false}
-              className="group/collapsible"
-            >
-              <SidebarGroupLabel asChild>
-                {open && <h3 className="">{item?.header}</h3>}
-              </SidebarGroupLabel>
-
-              {item?.title && (
-                <SidebarMenuButton asChild>
-                  <Link
-                    href={item?.href ?? ""}
-                    onClick={(e) => {
-                      if (item?.group) {
-                        e.preventDefault();
-                      }
-                    }}
-                  >
-                    <CollapsibleTrigger
-                      className={
-                        "flex items-center justify-between w-full cursor-pointer"
-                      }
-                    >
-                      <div className="flex items-center gap-2 w-full">
-                        {item.icon && <item.icon className={`size-4`} />}
-                        <div className="flex items-center justify-between w-full">
-                          {open && <span>{item?.title}</span>}
-                          {item?.group && (
-                            <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                          )}
-                        </div>
-                      </div>
-                    </CollapsibleTrigger>
-                  </Link>
-                </SidebarMenuButton>
-              )}
-
-              {item?.children &&
-                item?.children.map((child, index) => (
-                  <SidebarMenuButton asChild key={index}>
-                    <Link href={child?.href ?? ""}>
-                      <CollapsibleTrigger
-                        className={
-                          "flex items-center justify-between w-full cursor-pointer"
-                        }
-                      >
-                        <div className="flex items-center gap-2 w-full">
-                          {child.icon && <child.icon className={`size-4`} />}
-                          <div className="flex items-center justify-between w-full">
-                            {open && <span>{child?.title}</span>}
-                          </div>
-                        </div>
-                      </CollapsibleTrigger>
-                    </Link>
-                  </SidebarMenuButton>
-                ))}
-
-              {item?.group && (
-                <CollapsibleContent>
-                  <SidebarGroupContent className="bg-white dark:bg-gray-800 rounded-xl p-2">
-                    <SidebarMenu>
-                      {item?.group?.map((child, childIndex) => (
-                        <SidebarMenuItem key={childIndex}>
-                          <SidebarMenuButton asChild>
-                            <Link href={child?.href}>
-                              {child?.icon && <child.icon />}
-                              {open && <span>{child?.title}</span>}
-                              {child?.badge && (
-                                <SidebarMenuBadge>
-                                  {child?.badge}
-                                </SidebarMenuBadge>
-                              )}
-                            </Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                </CollapsibleContent>
-              )}
-
-              {items.length - 1 != index && <Separator className="my-2.5" />}
-            </Collapsible>
-          </SidebarGroup>
-        ))}
+        <ScrollArea className="h-full">
+          {sidebarData.map((section, index) => (
+            <SidebarGroup key={index}>
+              <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {section.items.map((item) => (
+                    <SidebarNavItem key={item.href} item={item} />
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          ))}
+        </ScrollArea>
       </SidebarContent>
 
-      {/* SIDEBAR FOOTER */}
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton>
-                  <User2 />
-                  <span>Settings</span>
-                  <ChevronUp className="ml-auto" />
+                <SidebarMenuButton
+                  size="lg"
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                  <User2 className="size-4" />
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold">Settings</span>
+                    <span className="truncate text-xs">Manage account</span>
+                  </div>
+                  <ChevronUp className="ml-auto size-4" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
-
               <DropdownMenuContent
-                className="w-(--radix-popper-anchor-width)"
+                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                side="bottom"
                 align="end"
+                sideOffset={4}
               >
-                <DropdownMenuItem className="p-2">
-                  <Link className="block" href={`/profile`}>
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">
+                    <User2 className="mr-2 size-4" />
                     Account
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="p-2">
-                  <span>Settings</span>
+                <DropdownMenuItem>
+                  <span className="mr-2 size-4" />
+                  Settings
                 </DropdownMenuItem>
-                <DropdownMenuItem className="p-2">
-                  <span>Sign Out</span>
+                <DropdownMenuItem>
+                  <span className="mr-2 size-4" />
+                  Sign Out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
