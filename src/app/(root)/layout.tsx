@@ -9,6 +9,7 @@ import { cookies } from "next/headers";
 import HeaderDirect from "@/components/HederDirect";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Providers from "@/components/providers/providers";
+import NextTopLoader from "nextjs-toploader";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -46,6 +47,18 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <NextTopLoader
+              initialPosition={0.08}
+              color="#2299DD"
+              crawlSpeed={200}
+              height={3}
+              crawl={true}
+              showSpinner={false}
+              easing="ease"
+              speed={200}
+              shadow="0 0 10px #2299DD,0 0 5px #2299DD"
+            />
+
             <SidebarProvider defaultOpen={defaultOpen}>
               <TooltipProvider>
                 <AppSidebar />
