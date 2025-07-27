@@ -103,7 +103,7 @@ const sidebarData: SidebarSection[] = [
         children: [
           { title: "Dashboard", href: "/dashboard", icon: BaggageClaim },
           { title: "Products", href: "/shop", icon: BaggageClaim },
-          { title: "Cart", href: "/cart", icon: BaggageClaim },
+          // { title: "Cart", href: "/cart", icon: BaggageClaim },
           { title: "Orders", href: "/orders", icon: Projector },
           { title: "Customers", href: "/customers", icon: User2 },
           { title: "Invoices", href: "/invoices", icon: Projector },
@@ -119,7 +119,7 @@ const sidebarData: SidebarSection[] = [
         href: "/payments",
         icon: ChartLine,
         children: [
-          { title: "Card Payment", href: "/card-payment", icon: ChartLine },
+          // { title: "Card Payment", href: "/card-payment", icon: ChartLine },
           { title: "Transaction", href: "/transaction", icon: Home },
         ],
       },
